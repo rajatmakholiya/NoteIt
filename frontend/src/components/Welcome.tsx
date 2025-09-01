@@ -8,10 +8,12 @@ interface User {
 const Welcome: React.FC = () => {
     const user: User | null = JSON.parse(localStorage.getItem('user') || 'null');
 
+    if (!user) return null;
+
     return (
-        <div className="p-6 bg-white rounded-lg shadow-md mb-6">
-            <h2 className="text-2xl font-bold">Welcome, {user?.name}!</h2>
-            <p className="text-gray-600">{user?.email}</p>
+        <div className="p-6 bg-white rounded-xl shadow-md">
+            <h2 className="text-2xl font-bold text-gray-900">Welcome, {user.name}!</h2>
+            <p className="text-sm text-gray-500 mt-1">Email: {user.email}</p>
         </div>
     );
 };
