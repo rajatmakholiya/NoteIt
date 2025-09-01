@@ -16,4 +16,4 @@ export const sendSignupOtp = (email: string, name: string, dateOfBirth: string) 
 export const sendLoginOtp = (email: string) => API.post('/auth/send-login-otp', { email });
 
 // Shared for both flows
-export const verifyOtp = (email: string, otp: string) => API.post('/auth/verify-otp', { email, otp });
+export const verifyOtp = (email: string, otp: string, rememberMe?: boolean) => API.post('/auth/verify-otp', { email, otp, rememberMe });

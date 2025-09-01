@@ -84,29 +84,27 @@ export const sendLoginOtp = async (req: Request, res: Response) => {
 };
 
 export const verifyOtp = async (req: Request, res: Response) => {
-  const { email, otp } = req.body;
-  try {
-    const user = await User.findOne({
-      email,
-      otp,
-      otpExpires: { $gt: new Date() },
-    });
+    const { email, otp, rememberMe } = req.body;
+    try {
+        const user = await User.findOne({ email, otp, otpExpires: { $gt: new Date() } });
 
-    if (!user) {
-      return res.status(400).json({ msg: "Invalid or expired OTP" });
+        if (!user) {
+            return res.status(400).json({ msg: 'Invalid or expired OTP' });
+        }
+
+        user.otp = undefined;
+        user.otpExpires = undefined;
+        await user.save();
+        
+        const payload = { userId: user.id, name: user.name, email: user.email };
+        const tokenExpiration = rememberMe ? '30d' : '1h';
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET!, { 
+            expiresIn: tokenExpiration 
+        });
+
+        res.status(200).json({ token, user: payload });
+    } catch (err:any) {
+        res.status(500).send('Server error');
     }
-
-    user.otp = undefined;
-    user.otpExpires = undefined;
-    await user.save();
-
-    const payload = { userId: user.id, name: user.name, email: user.email };
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-      expiresIn: "1h",
-    });
-
-    res.status(200).json({ token, user: payload });
-  } catch (err: any) {
-    res.status(500).send("Server error");
-  }
 };
