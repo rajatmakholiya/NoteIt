@@ -17,3 +17,8 @@ export const sendLoginOtp = (email: string) => API.post('/auth/send-login-otp', 
 
 // Shared for both flows
 export const verifyOtp = (email: string, otp: string, rememberMe?: boolean) => API.post('/auth/verify-otp', { email, otp, rememberMe });
+
+// Notes API
+export const getNotes = () => API.get('/notes');
+export const createNote = (note: { title: string, content: string }) => API.post('/notes', note);
+export const deleteNote = (id: string) => API.delete(`/notes/${id}`);
