@@ -1,37 +1,19 @@
-import { Router } from 'express';
-import passport from 'passport';
-import jwt from 'jsonwebtoken';
-import { sendSignupOtp, sendLoginOtp, verifyOtp } from '../controllers/authController';
+import { Router } from "express";
+import {
+  sendSignupOtp,
+  sendLoginOtp,
+  verifyOtp,
+} from "../controllers/authController";
 
 const router = Router();
 
-router.post('/send-signup-otp', sendSignupOtp);
+// Route for SIGNUP
+router.post("/send-signup-otp", sendSignupOtp);
 
-router.post('/send-login-otp', sendLoginOtp);
+// Route for LOGIN
+router.post("/send-login-otp", sendLoginOtp);
 
 // Shared route for verifying OTP
-router.post('/verify-otp', verifyOtp);
-
-// --- Google OAuth Routes ---
-router.get(
-  '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { session: false }),
-  (req, res) => {
-    const user: any = req.user;
-    const payload = { userId: user.id, name: user.name, email: user.email };
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-      expiresIn: "1h",
-    });
-    const fe_url = process.env.FRONTEND_URL || "http://localhost:5173";
-    res.redirect(
-      `${fe_url}/auth/callback?token=${token}&user=${JSON.stringify(payload)}`
-    );
-  }
-);
+router.post("/verify-otp", verifyOtp);
 
 export default router;
