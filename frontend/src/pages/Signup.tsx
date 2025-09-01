@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { sendLoginOtp, verifyOtp } from "../services/api";
+import { sendSignupOtp, verifyOtp } from "../services/api";
 
 import logo from "../assets/logo.svg";
 import backgroundImage from "../assets/background-image.png";
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
+  const [name, setName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -13,19 +15,15 @@ const Login: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
-  };
-
   const handleSendOtp = async () => {
-    if (!email) {
-      setError("Please enter your email.");
+    if (!name || !dateOfBirth || !email) {
+      setError("All fields are required.");
       return;
     }
     setLoading(true);
     setError("");
     try {
-      await sendLoginOtp(email);
+      await sendSignupOtp(email, name, dateOfBirth);
       setOtpSent(true);
     } catch (err: any) {
       setError(err.response?.data?.msg || "Failed to send OTP.");
@@ -62,10 +60,10 @@ const Login: React.FC = () => {
             <img src={logo} alt="HD Logo" className="w-50 h-50" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2 text-center lg:text-left">
-            Sign in
+            Sign up
           </h1>
           <p className="text-gray-500 mb-8 text-center lg:text-left">
-            Welcome back to HD
+            Sign up to enjoy the feature of HD
           </p>
 
           {error && (
@@ -75,6 +73,58 @@ const Login: React.FC = () => {
           )}
 
           <form onSubmit={handleVerifyOtp} className="space-y-5">
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-500"
+              >
+                Your Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading || otpSent}
+                placeholder="Jonas Khanwald"
+                className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+              />
+            </div>
+            <div className="relative">
+              <label
+                htmlFor="dob"
+                className="block text-sm font-medium text-gray-500"
+              >
+                Date of Birth
+              </label>
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 pt-6 text-gray-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </span>
+              <input
+                type="text"
+                onFocus={(e) => (e.target.type = "date")}
+                onBlur={(e) => (e.target.type = "text")}
+                id="dob"
+                value={dateOfBirth}
+                onChange={(e) => setDateOfBirth(e.target.value)}
+                disabled={loading || otpSent}
+                placeholder="11 December 1997"
+                className="mt-1 block w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+              />
+            </div>
             <div className="relative">
               <label
                 htmlFor="email"
@@ -128,7 +178,7 @@ const Login: React.FC = () => {
                 />
               </div>
             )}
-
+            
             {!otpSent ? (
               <button
                 type="button"
@@ -144,18 +194,18 @@ const Login: React.FC = () => {
                 disabled={loading}
                 className="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400 disabled:cursor-not-allowed"
               >
-                {loading ? "Verifying..." : "Verify & Sign In"}
+                {loading ? "Verifying..." : "Verify & Sign Up"}
               </button>
             )}
           </form>
 
           <p className="text-center text-sm text-gray-600 mt-8">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <Link
-              to="/"
+              to="/login"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
-              Sign up
+              Sign in
             </Link>
           </p>
         </div>
@@ -171,4 +221,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Signup;
