@@ -11,11 +11,8 @@ const Login: React.FC = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
-
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
-  };
 
   const handleSendOtp = async () => {
     if (!email) {
@@ -43,7 +40,7 @@ const Login: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const { data } = await verifyOtp(email, otp);
+      const { data } = await verifyOtp(email, otp, rememberMe);
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/dashboard");
@@ -55,12 +52,19 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex relative">
+      {/* Desktop-only Header (Top Left) */}
+      <div className="hidden lg:flex items-center absolute top-8 left-8 z-10">
+        <img src={logo} alt="HD Logo" className="w-50 h-50" />
+      </div>
+
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 bg-white">
         <div className="w-full max-w-md">
-          <div className="hidden lg:flex items-center absolute top-8 left-8 z-10">
+          {/* Mobile-only Header (Centered) */}
+          <div className="flex items-center justify-center mb-8 lg:hidden">
             <img src={logo} alt="HD Logo" className="w-50 h-50" />
           </div>
+
           <h1 className="text-4xl font-bold text-gray-900 mb-2 text-center lg:text-left">
             Sign in
           </h1>
@@ -110,23 +114,41 @@ const Login: React.FC = () => {
             </div>
 
             {otpSent && (
-              <div>
-                <label
-                  htmlFor="otp"
-                  className="block text-sm font-medium text-gray-500"
-                >
-                  OTP Code
-                </label>
-                <input
-                  type="text"
-                  id="otp"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  disabled={loading}
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Enter 6-digit code"
-                />
-              </div>
+              <>
+                <div>
+                  <label
+                    htmlFor="otp"
+                    className="block text-sm font-medium text-gray-500"
+                  >
+                    OTP Code
+                  </label>
+                  <input
+                    type="text"
+                    id="otp"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    disabled={loading}
+                    className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Enter 6-digit code"
+                  />
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-900"
+                  >
+                    Keep me logged in
+                  </label>
+                </div>
+              </>
             )}
 
             {!otpSent ? (
@@ -160,11 +182,11 @@ const Login: React.FC = () => {
           </p>
         </div>
       </div>
-      <div className="hidden lg:block lg:w-1/2">
+      <div className="hidden lg:block lg:w-1/2 p-2">
         <img
           src={backgroundImage}
           alt="Abstract blue waves"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-3xl"
         />
       </div>
     </div>

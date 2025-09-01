@@ -210,11 +210,11 @@ const Signup: React.FC = () => {
           </p>
         </div>
       </div>
-      <div className="hidden lg:block lg:w-1/2">
+      <div className="hidden lg:block lg:w-1/2 p-2">
         <img
           src={backgroundImage}
           alt="Abstract blue waves"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-3xl"
         />
       </div>
     </div>
